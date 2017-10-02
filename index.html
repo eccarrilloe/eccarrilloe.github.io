@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>eccarrilloe.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="eccarrilloe.github.io">
+<meta property="og:url" content="https://eccarrilloe.github.io/index.html">
+<meta property="og:site_name" content="eccarrilloe.github.io">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="eccarrilloe.github.io">
+<meta name="twitter:creator" content="@http:&#x2F;&#x2F;twitter.com&#x2F;eccarrilloe">
+<link rel="publisher" href="https://plus.google.com/108645627041692010179">
+  
+    <link rel="alternate" href="/atom.xml" title="eccarrilloe.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">eccarrilloe.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://eccarrilloe.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Rasterization-Z-buffer-Algorithm" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/24/Rasterization-Z-buffer-Algorithm/" class="article-date">
+  <time datetime="2017-09-25T01:46:57.000Z" itemprop="datePublished">2017-09-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Rendering/">Rendering</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/24/Rasterization-Z-buffer-Algorithm/">Rasterization: Z-buffer Algorithm</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The purpose of this post is to understand and implement the z-buffer algorithm to solve the visibility problem. The visibility problem is the problem of deciding which elements of a scene are visible and which are hidden.</p>
+<h2 id="Introduction-to-Rasterization"><a href="#Introduction-to-Rasterization" class="headerlink" title="Introduction to Rasterization"></a>Introduction to Rasterization</h2><hr>
+
+<p>Rasterization transform an image from a vector graphics format to a raster image(composed of pixels and dots) for output in a monitor, printer or for storage(bitmap file format). Rasterization is the most popular technique for producing real-time 3D computer graphics. Compared with other rendering methods(such as ray-tracing), Rasterization is extremely fast.</p>
+<h2 id="The-Z-buffer-Algorithm"><a href="#The-Z-buffer-Algorithm" class="headerlink" title="The Z-buffer Algorithm"></a>The Z-buffer Algorithm</h2><hr>
+
+<p>The idea of the Z-buffer algorithm is to use a 2D matrix(z-buffer or depth-buffer) to store the depth of the closest object to the observer’s view. When a object is rendered, the depth of a generated pixel(z coordinate) is stored in the depth buffer. If another object must be painted in the same pixel, the depth of the new pixel is compared with the stored depth, if the new pixel’s depth is closer than the stored depth then the value of the pixel in the z-buffer is overriden. The z-buffer will allow to reproduce depth perception correctly.</p>
+<p><img src="/assets/img/z-buffer2.png" alt="Depth representation with Z-buffer"></p>
+<p>The previous example shows two objects in a 3D-space transformed to a 2D projection-plane. The second row shows the values of the Z-buffer matrix and how the Z-buffer algorithm process overlapping.</p>
+<p>An important characteristic of the z-buffer is the granularity. The granularity of a z-buffer defines the scene’s quality. A 16-bit z-buffer could result in artifacts(called z-fighting or stitching) when two object are very close each other. As higher z-buffer size, better image quality will be rendered, avoiding artifacts but the problem cannot be entirely eliminated without additional algorithms. 24-bit or 32-bit Z-buffer is more accurate. A 8-bit Z-buffer is almost never used because it has too little precision.</p>
+<p><img src="/assets/img/z-fighting.png" alt="Z-fighting with multiple colors and textures over a grey background"></p>
+<h3 id="Pseudo-Code"><a href="#Pseudo-Code" class="headerlink" title="Pseudo-Code"></a>Pseudo-Code</h3><hr>
+
+<p>The following pseudo-code shows how Z-buffer algorithm works. The algorithm receives as input the list of polygons <strong><em>Plist = {P<sub>1</sub>, P<sub>2</sub>, …, P<sub>N</sub>}</em></strong> and return a color array <strong><em>COLOR(x, y)</em></strong> representing the color for each pixel in the projection plane.</p>
+<ul>
+<li><strong>Given:</strong> A list of Polygons <em>Plist</em>=<em>{P<sub>1</sub>, P<sub>2</sub>, …, P<sub>N</sub>}</em></li>
+<li><strong>Output:</strong> A color array</li>
+<li><strong>Initialize:</strong><ul>
+<li><strong>zBufferArray(x, y) = maxDepth</strong> -&gt; array of depths for the projection plane.</li>
+<li><strong>colorArray(x, y) = backgroundColor</strong> -&gt; array of colors for the projection plane.</li>
+</ul>
+</li>
+<li><strong>Begin:</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FOREACH polygon IN Plist DO &#123;</div><div class="line">  FOREACH pixel(x, y) IN polygon DO &#123;</div><div class="line">      CALCULATE zDepth OF polygon AT (x, y)</div><div class="line">      IF (zDepth &lt; zBufferArray[x, y]) THEN</div><div class="line">          zBufferArray[x, y] = zDepth</div><div class="line">          colorArray[x, y] = color AT polygon[x, y]</div><div class="line">      END IF</div><div class="line">  END FOREACH</div><div class="line">END FOREACH</div><div class="line"></div><div class="line">RETURN colorArray</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="The-Implementation"><a href="#The-Implementation" class="headerlink" title="The Implementation"></a>The Implementation</h2><hr>
+
+<p>The Z-buffer algorithm was implemented using the javascript library <a href="https://p5js.org" target="_blank" rel="external">P5.js</a>. The algorithm iterates over an array of polygons, each of them with a matrix of pixels representing the color and depth of each pixel. So, each value in the matrix is a quadruple representing the three main colors in RGB format(Red, Green, Blue) and the last item of the quadruple is the depth of the polygon for that pixel. As a result, the implementation return a matrix of colors representing the color for each pixel in the representation view which is shown to the viewer.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">zBuffer</span>(<span class="params">polygons</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> zBufferArray = [];</div><div class="line">  <span class="keyword">let</span> colorArray = [];</div><div class="line"></div><div class="line">  <span class="comment">/* Initialize arrays */</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="keyword">this</span>.config.sketchHeight; i += <span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">let</span> bufferRow = [];</div><div class="line">    <span class="keyword">let</span> colorRow = [];</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; <span class="keyword">this</span>.config.sketchWidth; j += <span class="number">1</span>) &#123;</div><div class="line">      bufferRow.push(<span class="literal">Infinity</span>);</div><div class="line">      colorRow.push(<span class="keyword">this</span>.backgroundColor);</div><div class="line">    &#125;</div><div class="line">    zBufferArray.push(bufferRow);</div><div class="line">    colorArray.push(colorRow);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Iterate over all polygons</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; polygons.length; i += <span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">const</span> polygon = polygons[i];</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; polygon.length; j += <span class="number">1</span>) &#123;</div><div class="line">      <span class="keyword">const</span> pixelRow = polygon[j];</div><div class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> k = <span class="number">0</span>; k &lt; pixelRow.length; k += <span class="number">1</span>) &#123;</div><div class="line">        <span class="comment">// Check z-depth of pixel</span></div><div class="line">        <span class="keyword">if</span> (pixelRow[k][<span class="number">3</span>] &lt; zBufferArray[j][k]) &#123;</div><div class="line">          zBufferArray[j][k] = pixelRow[k][<span class="number">3</span>];</div><div class="line">          colorArray[j][k] = pixelRow[k];</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> colorArray;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h2><hr>
+
+<p>After implementing the z-buffer algorithm in Javacript Library P5.js. Two images were generated, the first one, the image in 2D of the representation view of the polygons. The second one, the image of the depth representation using z-buffer.</p>
+<p><img src="/assets/img/result1.png" alt="2D Representation view of the 3D original image"></p>
+<p>The above image shows the representation of Z-buffer in grayscale. As darker the polygon is, closer to the viewer is. The Z-buffer algorithm is extremely fast, compared with some ray-tracing algorithms. That is why Rasterization is most common used in Video games image rendering, because it allow games to feel real, allowing at least 30 frames per second rates, depending of the video card adapter.</p>
+<p><img src="/assets/img/result2.png" alt="Z-buffer representation of polygon depths of the 3D original image"></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><hr>
+
+<ol>
+<li>W.K. Giloi, J.L. Encarnação, W. Straßer. “The Giloi’s School of Computer Graphics”. Computer Graphics 35.</li>
+<li>N. Calvo. Computación Gráfica: El espacio de la imagen. <a href="http://www.cimec.org.ar/~ncalvo/framebuffer_doc.pdf" target="_blank" rel="external">Link</a></li>
+<li>University of Helsinki. The z-Buffer Algorithm. <a href="https://www.cs.helsinki.fi/group/goa/render/piilopinnat/z_buffer.html" target="_blank" rel="external">Link</a></li>
+<li>Wikipedia. Z-buffering. <a href="https://en.wikipedia.org/wiki/Z-buffering" target="_blank" rel="external">Link</a></li>
+<li>D. Rousset. “Tutorial part 4: learning how to write a 3D software engine in C#, TS or JS – Rasterization &amp; Z”. <a href="https://www.davrous.com/2013/06/21/tutorial-part-4-learning-how-to-write-a-3d-software-engine-in-c-ts-or-js-rasterization-z-buffering/" target="_blank" rel="external">Link</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://eccarrilloe.github.io/2017/09/24/Rasterization-Z-buffer-Algorithm/" data-id="cj8a9gdti0005pi8kdkuiaofh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Algorithms/">Algorithms</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rasterization/">Rasterization</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rendering/">Rendering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Z-buffer/">Z-buffer</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Optical-Illusions-P5js-Implementation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/13/Optical-Illusions-P5js-Implementation/" class="article-date">
+  <time datetime="2017-09-13T23:31:33.000Z" itemprop="datePublished">2017-09-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Optical-Illusions/">Optical Illusions</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/13/Optical-Illusions-P5js-Implementation/">Optical Illusions: P5.js Implementation</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>This post shows the result of implementing different optical illusions using the javascript library <a href="https://p5js.org/" target="_blank" rel="external">P5.js</a>.</p>
+<p>You can show the implementation code <a href="https://github.com/eccarrilloe/optical-illusions" target="_blank" rel="external">here</a>.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://eccarrilloe.github.io/2017/09/13/Optical-Illusions-P5js-Implementation/" data-id="cj8a9gdt40001pi8kutcw32t2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Illusions/">Illusions</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Implementation/">Implementation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/P5js/">P5js</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Introduction-My-First-Post" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/01/Introduction-My-First-Post/" class="article-date">
+  <time datetime="2017-09-01T23:31:33.000Z" itemprop="datePublished">2017-09-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Intro/">Intro</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/01/Introduction-My-First-Post/">Introduction: My First Post</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>Edward Camilo Carrillo</li>
+<li>22 years</li>
+<li>Web Developer - Student</li>
+<li>Bogotá - Colombia</li>
+</ul>
+<p>I’m web developer and student in the National University of Colombia. I’m a proactive person, always eager to learn new topics. I like all topics related with Software Engineering, Software Architecture and Algorithms. I’m part of TLÖN research group, focused in the development new tools to manage and control distributed and decentralized networks.</p>
+<h2 id="Interests"><a href="#Interests" class="headerlink" title="Interests"></a>Interests</h2><ul>
+<li>Software Architecture</li>
+<li>Software Engineering</li>
+<li>Algorithms</li>
+<li>Ad-hoc networks</li>
+</ul>
+<h2 id="Projects"><a href="#Projects" class="headerlink" title="Projects"></a>Projects</h2><ul>
+<li><a href="https://github.com/UNarqui17i-A/Picstory" target="_blank" rel="external"><strong>PicStory:</strong></a> Social network to publish and share photos.</li>
+<li><a href="https://github.com/RodEsV/unbiketracker" target="_blank" rel="external"><strong>UNBikeTracker:</strong></a> App to track bikes using a GPS device.</li>
+<li><a href="https://github.com/eccarrilloe/jDocumenter" target="_blank" rel="external"><strong>jDocumenter:</strong></a> Tool to document Java code in XML.</li>
+<li><a href="https://github.com/eccarrilloe/HardTLON" target="_blank" rel="external"><strong>HardTLÖN:</strong></a> Module to obtain distributed resources in an Ad-hoc network.</li>
+<li><a href="https://github.com/eccarrilloe/RubikCube" target="_blank" rel="external"><strong>RubikCube:</strong></a> Operator to arm and disarm a Rubik cube.</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://eccarrilloe.github.io/2017/09/01/Introduction-My-First-Post/" data-id="cj8a9gdsw0000pi8kmdstbu6a" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Intro/">Intro</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Welcome/">Welcome</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/29/hello-world/" class="article-date">
+  <time datetime="2017-08-29T18:24:51.000Z" itemprop="datePublished">2017-08-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/29/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://eccarrilloe.github.io/2017/08/29/hello-world/" data-id="cj8a9gdtf0004pi8ke5v4qgiu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Intro/">Intro</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Optical-Illusions/">Optical Illusions</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Rendering/">Rendering</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithms/">Algorithms</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Illusions/">Illusions</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Implementation/">Implementation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Intro/">Intro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/P5js/">P5js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rasterization/">Rasterization</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rendering/">Rendering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Welcome/">Welcome</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Z-buffer/">Z-buffer</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Algorithms/" style="font-size: 10px;">Algorithms</a> <a href="/tags/Illusions/" style="font-size: 10px;">Illusions</a> <a href="/tags/Implementation/" style="font-size: 10px;">Implementation</a> <a href="/tags/Intro/" style="font-size: 10px;">Intro</a> <a href="/tags/P5js/" style="font-size: 10px;">P5js</a> <a href="/tags/Rasterization/" style="font-size: 10px;">Rasterization</a> <a href="/tags/Rendering/" style="font-size: 10px;">Rendering</a> <a href="/tags/Welcome/" style="font-size: 10px;">Welcome</a> <a href="/tags/Z-buffer/" style="font-size: 10px;">Z-buffer</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/09/24/Rasterization-Z-buffer-Algorithm/">Rasterization: Z-buffer Algorithm</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/13/Optical-Illusions-P5js-Implementation/">Optical Illusions: P5.js Implementation</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/01/Introduction-My-First-Post/">Introduction: My First Post</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/29/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Edward Carrillo<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

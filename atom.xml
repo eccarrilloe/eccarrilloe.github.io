@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>eccarrilloe.github.io</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://eccarrilloe.github.io/"/>
+  <updated>2017-10-02T14:11:14.987Z</updated>
+  <id>https://eccarrilloe.github.io/</id>
+  
+  <author>
+    <name>Edward Carrillo</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Rasterization: Z-buffer Algorithm</title>
+    <link href="https://eccarrilloe.github.io/2017/09/24/Rasterization-Z-buffer-Algorithm/"/>
+    <id>https://eccarrilloe.github.io/2017/09/24/Rasterization-Z-buffer-Algorithm/</id>
+    <published>2017-09-25T01:46:57.000Z</published>
+    <updated>2017-10-02T14:11:14.987Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;The purpose of this post is to understand and implement the z-buffer algorithm to solve the visibility problem. The visibility problem
+        
+      
+    
+    </summary>
+    
+      <category term="Rendering" scheme="https://eccarrilloe.github.io/categories/Rendering/"/>
+    
+    
+      <category term="Rendering" scheme="https://eccarrilloe.github.io/tags/Rendering/"/>
+    
+      <category term="Rasterization" scheme="https://eccarrilloe.github.io/tags/Rasterization/"/>
+    
+      <category term="Z-buffer" scheme="https://eccarrilloe.github.io/tags/Z-buffer/"/>
+    
+      <category term="Algorithms" scheme="https://eccarrilloe.github.io/tags/Algorithms/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Optical Illusions: P5.js Implementation</title>
+    <link href="https://eccarrilloe.github.io/2017/09/13/Optical-Illusions-P5js-Implementation/"/>
+    <id>https://eccarrilloe.github.io/2017/09/13/Optical-Illusions-P5js-Implementation/</id>
+    <published>2017-09-13T23:31:33.000Z</published>
+    <updated>2017-10-02T02:50:14.499Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;This post shows the result of implementing different optical illusions using the javascript library &lt;a href=&quot;https://p5js.org/&quot;
+        
+      
+    
+    </summary>
+    
+      <category term="Optical Illusions" scheme="https://eccarrilloe.github.io/categories/Optical-Illusions/"/>
+    
+    
+      <category term="Illusions" scheme="https://eccarrilloe.github.io/tags/Illusions/"/>
+    
+      <category term="P5js" scheme="https://eccarrilloe.github.io/tags/P5js/"/>
+    
+      <category term="Implementation" scheme="https://eccarrilloe.github.io/tags/Implementation/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Introduction: My First Post</title>
+    <link href="https://eccarrilloe.github.io/2017/09/01/Introduction-My-First-Post/"/>
+    <id>https://eccarrilloe.github.io/2017/09/01/Introduction-My-First-Post/</id>
+    <published>2017-09-01T23:31:33.000Z</published>
+    <updated>2017-10-02T02:06:41.285Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;ul&gt;
+&lt;li&gt;Edward Camilo Carrillo&lt;/li&gt;
+&lt;li&gt;22 years&lt;/li&gt;
+&lt;li&gt;Web Developer - Student&lt;/li&gt;
+&lt;li&gt;Bogotá - Colombia&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I’m web
+        
+      
+    
+    </summary>
+    
+      <category term="Intro" scheme="https://eccarrilloe.github.io/categories/Intro/"/>
+    
+    
+      <category term="Intro" scheme="https://eccarrilloe.github.io/tags/Intro/"/>
+    
+      <category term="Welcome" scheme="https://eccarrilloe.github.io/tags/Welcome/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://eccarrilloe.github.io/2017/08/29/hello-world/"/>
+    <id>https://eccarrilloe.github.io/2017/08/29/hello-world/</id>
+    <published>2017-08-29T18:24:51.000Z</published>
+    <updated>2017-10-02T13:42:22.041Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a
+        
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
